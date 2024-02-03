@@ -54,4 +54,4 @@ async def default_help(ctx):
     await ctx.send(embed=embed)
 
 keep_alive()
-bot.run("MTIwMzQxMjEwMTE4ODY4MTc3OA.GvbI83.KDeowNndHGb7rhaOPrcJYP-DjEaNjHbi_5qJtI")
+bot.run("YOUR_TOKEN")
