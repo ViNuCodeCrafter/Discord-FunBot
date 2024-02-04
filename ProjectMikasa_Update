@@ -1,0 +1,123 @@
+import discord
+from discord.ext import commands
+from keep_alive import keep_alive
+import requests
+import random
+import asyncio
+
+intents = discord.Intents.default()
+intents.message_content = True
+
+bot = commands.Bot(command_prefix='!', intents=intents)
+
+# Remove the default help command
+bot.remove_command('help')
+
+@bot.event
+async def on_ready():
+    print(f'Logged in as {bot.user.name} ({bot.user.id})')
+
+@bot.command(name='cat', help='Get a random cat gif')
+async def catgif(ctx):
+    response = requests.get('https://api.thecatapi.com/v1/images/search')
+    data = response.json()
+    cat_url = data[0]['url']
+    await ctx.send(cat_url)
+
+@bot.command(name='fortune', help='Get a random fortune cookie message')
+async def fortune(ctx):
+    fortunes = [
+        "You will have a great day!",
+        "Expect the unexpected.",
+        "A journey of a thousand miles begins with a single step.",
+        "You will find joy in unexpected places."
+    ]
+    fortune_message = random.choice(fortunes)
+    await ctx.send(f"🥠 {fortune_message}")
+
+@bot.command(name='8ball', help='Ask the magic 8-ball a question')
+async def eight_ball(ctx, *, question):
+    responses = [
+        "Yes",
+        "No",
+        "Ask again later",
+        "Cannot predict now",
+        "Don't count on it"
+    ]
+    answer = random.choice(responses)
+    await ctx.send(f"🎱 {answer}")
+
+@bot.command(name='help', help='Show this message')
+async def default_help(ctx):
+    embed = discord.Embed(title="Bot Commands", color=0x00ff00)
+    for command in bot.commands:
+        embed.add_field(name=f"{bot.command_prefix}{command.name}", value=command.help, inline=False)
+    await ctx.send(embed=embed)
+
+@bot.command(name='purge', help='Purge a specified number of messages')
+async def purge(ctx, amount: int):
+    if amount <= 0:
+        await ctx.send("Please specify a positive number of messages to purge.")
+        return
+
+    # Fetch and delete messages
+    messages = await asyncio.gather(*[asyncio.create_task(msg.delete()) async for msg in ctx.channel.history(limit=amount + 1)])
+
+    # Notify about the purged messages
+    await ctx.send(f"Purged {amount} messages.")
+
+
+@bot.command(name='ping', help='Check the bot\'s latency')
+async def ping(ctx):
+    latency = round(bot.latency * 1000)  # Convert to milliseconds
+ 
+    await ctx.send(f'Pong! Latency: {latency}ms')
+
+
+
+@bot.command(name='calculate', aliases=['c'], help='Perform basic arithmetic calculations')
+async def calculate(ctx, num1: float, operation: str, num2: float):
+    result = None
+
+    if operation == '+':
+        result = num1 + num2
+    elif operation == '-':
+        result = num1 - num2
+    elif operation == '*':
+        result = num1 * num2
+    elif operation == '/':
+        if num2 != 0:
+            result = num1 / num2
+        else:
+            await ctx.send("Cannot divide by zero!")
+            return
+    else:
+        await ctx.send("Invalid operation. Supported operations: +, -, *, /")
+        return
+
+    await ctx.send(f"Result: {result}")
+
+@bot.command(name='start', help='Start the bot')
+async def start(ctx):
+    # Send a direct message (DM) to the user who invoked the command
+    await ctx.author.send("hii")
+
+@bot.command(name='meme', help='Get a random meme')
+async def get_meme(ctx):
+    try:
+        # Fetch a random meme from an API (replace 'api_url' with the actual API endpoint)
+        api_url = 'https://some-meme-api.com/random'
+        response = requests.get(api_url)
+        data = response.json()
+
+        # Get the meme image URL
+        meme_url = data['url']
+
+        # Send the meme image to the channel
+        await ctx.send(f"Here's a random meme for you:\n{meme_url}")
+
+    except Exception as e:
+        print(f"Error fetching meme: {e}")
+        await ctx.send("Sorry, I couldn't fetch a meme at the moment.")
+keep_alive()
+bot.run("BOT-TOKEN")
