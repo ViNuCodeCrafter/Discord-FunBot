@@ -102,22 +102,6 @@ async def start(ctx):
     # Send a direct message (DM) to the user who invoked the command
     await ctx.author.send("hii")
 
-@bot.command(name='meme', help='Get a random meme')
-async def get_meme(ctx):
-    try:
-        # Fetch a random meme from an API (replace 'api_url' with the actual API endpoint)
-        api_url = 'https://some-meme-api.com/random'
-        response = requests.get(api_url)
-        data = response.json()
 
-        # Get the meme image URL
-        meme_url = data['url']
-
-        # Send the meme image to the channel
-        await ctx.send(f"Here's a random meme for you:\n{meme_url}")
-
-    except Exception as e:
-        print(f"Error fetching meme: {e}")
-        await ctx.send("Sorry, I couldn't fetch a meme at the moment.")
 keep_alive()
 bot.run("BOT-TOKEN")
