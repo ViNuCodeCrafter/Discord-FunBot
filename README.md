@@ -11,7 +11,6 @@ Mikasa is a Discord bot created as part of a college project. The bot is designe
 - Ping command to check the bot's latency
 - Basic arithmetic calculation command
 - Start command to initiate the bot
-- Meme command to get a random meme
 - More features to be added soon!
 
 ## Technologies
